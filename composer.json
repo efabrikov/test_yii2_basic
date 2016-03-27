@@ -1,7 +1,7 @@
 {
     "name": "yiisoft/yii2-app-basic",
-    "description": "Yii 2 Basic Application Template",
-    "keywords": ["yii2", "framework", "basic", "application template"],
+    "description": "Yii 2 Basic Project Template",
+    "keywords": ["yii2", "framework", "basic", "project template"],
     "homepage": "http://www.yiiframework.com/",
     "type": "project",
     "license": "BSD-3-Clause",
@@ -15,19 +15,17 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=5.4.0",
-        "yiisoft/yii2": "*",
+        "yiisoft/yii2": ">=2.0.5",
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
-        "yiisoft/yii2-jui": "*",
-        "yiisoft/yii2-imagine": "*",
-        "yiisoft/yii2-authclient": "~2.0.0"
+        "kartik-v/yii2-context-menu": "dev-master",
+        "dmstr/yii2-migrate-command": "*"        
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
         "yiisoft/yii2-debug": "*",
         "yiisoft/yii2-gii": "*",
-        "yiisoft/yii2-faker": "*",
-        "c006/yii2-migration-utility": "dev-master"
+        "yiisoft/yii2-faker": "*"
     },
     "config": {
         "process-timeout": 1800
@@ -35,7 +33,7 @@
     "scripts": {
         "post-create-project-cmd": [
             "yii\\composer\\Installer::postCreateProject"
-        ]
+        ]        
     },
     "extra": {
         "yii\\composer\\Installer::postCreateProject": {

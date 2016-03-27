@@ -8,11 +8,7 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
-use app\models\EntryForm;
-use yii\web\View;
-use app\components\ActionTimeFilter;
 use yii\helpers\Url;
-use yii\base\ErrorException;
 
 class SiteController extends Controller
 {
@@ -37,9 +33,6 @@ class SiteController extends Controller
                     'logout' => ['post'],
                 ],
             ],
-            'time'   => [
-                'class' => ActionTimeFilter::className()
-            ],
         ];
     }
 
@@ -53,24 +46,12 @@ class SiteController extends Controller
                 'class'           => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
-            'page'    => [
-                'class' => 'yii\web\ViewAction',
-            ],
-            'auth' => [
-                'class' => 'yii\authclient\AuthAction',
-                'successCallback' => [$this, 'successCallback'],
-            ],
         ];
     }
 
     public function actionIndex()
     {
         return $this->render('index');
-    }
-
-    public function actionSay($message = 'Hello')
-    {
-        return $this->render('say', ['message' => $message]);
     }
 
     public function actionLogin()
@@ -82,12 +63,10 @@ class SiteController extends Controller
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
-        } else {
-            return $this->render('login',
-                    [
-                    'model' => $model,
-            ]);
         }
+        return $this->render('login', [
+                'model' => $model,
+        ]);
     }
 
     public function actionLogout()
@@ -104,12 +83,10 @@ class SiteController extends Controller
             Yii::$app->session->setFlash('contactFormSubmitted');
 
             return $this->refresh();
-        } else {
-            return $this->render('contact',
-                    [
-                    'model' => $model,
-            ]);
         }
+        return $this->render('contact', [
+                'model' => $model,
+        ]);
     }
 
     public function actionAbout()
@@ -117,133 +94,93 @@ class SiteController extends Controller
         return $this->render('about');
     }
 
-    public function actionEntry()
+    public function actionCart()
     {
-        $model = new EntryForm();
+        if (Yii::$app->request->isPjax) {
+            if (isset($_POST['do']) && is_array($_POST['do']) && count($_POST['do'])
+                == 1) {
+                reset($_POST['do']);
+                $k = key($_POST['do']);
+                if ($k == "add") {
+                    echo "Добавление" . $_POST['pid'];
+                    if (empty(Yii::$app->session['cart'])) return;
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            return $this->render('entry-confirm', ['model' => $model]);
+                    $cart                      = Yii::$app->session['cart'];
+                    $cart['items'][]           = $_POST['pid'];
+                    Yii::$app->session['cart'] = $cart;
+                }
+                elseif ($k == "del") echo "Удаление";
+                else echo "Так не бывает";
+            } else echo "Так не бывает";
+        }
+
+        if (!empty(Yii::$app->session['cart'])) {
+            $cart = Yii::$app->session['cart'];
         } else {
-            return $this->render('entry', ['model' => $model]);
+            $cart = [
+                'id'    => array_sum(explode(' ', microtime())) * 10000,
+                'items' => []
+            ];
         }
+
+        Yii::$app->session['cart'] = $cart;
+
+        return $this->render('cart', [
+                'cart' => $cart
+        ]);
     }
 
-    public function actionEfabrikov()
+    public function actionAddCartItem($pid)
     {
-        //echo \Yii::$app->view->renderFile('@app/license.md');
+        if (empty(Yii::$app->session['cart'])) return;
 
-        /* \Yii::$app->view->on(View::EVENT_END_BODY,
-          function () {
-          echo date('Y-m-d') . 'sssssssssssssssssssssssssssssssssss<hr><hr>';
-          }); */
+        $cart                      = Yii::$app->session['cart'];
+        $cart['items'][]           = $pid;
+        Yii::$app->session['cart'] = $cart;
 
-        /* $q = new \yii\db\Query();
-
-          print_r($q->from('country')->max('population')); */
-        //throw new \yii\web\NotFoundHttpException('No !!!');
-        //throw new \yii\web\ServerErrorHttpException('AAAAAA');
-        /*$response         = Yii::$app->response;
-        $response->format = \yii\web\Response::FORMAT_JSON;
-        $response->data   = ['message' => 'hello world'];
-
-        return $response;*/
-        //\Yii::$app->response->redirect('http://example.com/new', 301)->send();
-
-        /*\Yii::$app->response
-            ->redirect(Url::toRoute('site/table'), 301)
-            ->send();*/
-        /*return \Yii::$app->response
-            ->sendFile(Yii::getAlias('@webroot/img/test-image.jpg'));*/
-        //echo '<pre>';
-        //Yii::info('ssss');
-
-
-        //throw new \yii\base\UserException('wtf?');
-        //Yii::info(Yii::$app->session);
-        /*Yii::info('test', 'category');
-        \Yii::beginProfile('block1');
-        \Yii::beginProfile('block2');
-        \Yii::endProfile('block2');
-        \Yii::endProfile('block1');*/
-
-        //$com = new \app\components\MyClass(1,2);
-        //echo '<pre>';
-        //Yii::$app->myClass->go();
-        //var_dump(Yii::$app->myClass);
-
-        //$myObject = Yii::createObject(\app\components\MyObject::className());
-        //$myObject = new \app\components\MyObject('param1', 'param2');
-        /*$myObject = Yii::createObject([
-            'class' => \app\components\MyObject::className()
-        ],[1,2]);*/
-
-        /*$myComponent = Yii::createObject([
-            'class' => \app\components\MyComponent::className(),
-            'prop1' => 1,
-            'prop2' => 2,
-        ]);*/
-
-        /*$date = new \DateTime();
-        print_r($date->getTimezone()); die();*/
-
-        /*$myComponent = Yii::$app->myComponent->prop1;
-        echo $myComponent; die();*/
-
-
-         /*Yii::$app->on('views.site.efabrikov.end',
-            ['\app\components\MyObject', 'afterSiteEvent']);*/        
-
-        return $this->render('efabrikov');
-
+        return $this->redirect('/site/cart');
     }
 
-    public function actionAuthClientCollection()
+    public function actionDeleteCartItem($id)
     {
-        
+        if (empty(Yii::$app->session['cart'])) return;
+
+        $cart                      = Yii::$app->session['cart'];
+        unset($cart['items'][$id]);
+        Yii::$app->session['cart'] = $cart;
+
+        return $this->redirect('/site/cart');
     }
 
-    public function actionTable()
+    public function actionCartItemDetailsAdd($id)
     {
-        //Материал
-        //Плотность
-        //Коэффициент теплопроводности
+        if (empty(Yii::$app->session['cart'])) return;
 
-        $filename = Yii::getAlias('@webroot/files/data_table_materials.txt');
-        $content  = file_get_contents($filename);
-        $content  = str_replace(['<tr>', '<td>', '<p>'], '', $content);
-        $data     = explode('    ', $content);
+        $cart                      = Yii::$app->session['cart'];
+        $cart['details'][$id]      = 'some data from db. cache in session. #=' . $id;
+        Yii::$app->session['cart'] = $cart;
 
-        unset($data[0]);
-        unset($data[239]);
-
-        $data = array_filter($data,
-            function($var) {
-            $var = trim($var);
-            return (empty($var)) ? false : true;
-        });
-
-        $data = array_chunk($data, 3);
-        usort($data,
-            function($a, $b) {
-            if ($a[2] == $b[2]) {
-                return 0;
-            }
-            return ($a[2] < $b[2]) ? -1 : 1;
-        }
-        );
-
-        //echo'<pre>';
-        //print_r($data);
-        foreach ($data as $key => $value) {
-
-            echo "<div><span>{$value[0]}</span><span>{$value[1]}</span><span><b>{$value[2]}</b></span></div>";
-        }
+        return $this->redirect('/site/cart');
     }
 
-    public function successCallback($client)
+    public function actionCartItemDetailsDelete($id)
     {
-        $attributes = $client->getUserAttributes();
-        // user login or signup comes here
-        //\yii\helpers\VarDumper::dump($attributes,10, 1);  die();
+        if (empty(Yii::$app->session['cart'])) return;
+
+        $cart                      = Yii::$app->session['cart'];
+        unset($cart['details'][$id]);
+        Yii::$app->session['cart'] = $cart;
+
+        return $this->redirect('/site/cart');
+    }
+
+    public function actionInlineJs()
+    {
+        header("Content-type: text/javascript");
+
+        Yii::$app->response->data   = Yii::$app->session['inlineJs'];
+        Yii::$app->response->format = \yii\web\Response::FORMAT_RAW;
+
+        return Yii::$app->response;
     }
 }

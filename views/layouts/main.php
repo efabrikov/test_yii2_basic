@@ -1,13 +1,13 @@
 <?php
+/* @var $this \yii\web\View */
+/* @var $content string */
 
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
-
-/* @var $this \yii\web\View */
-/* @var $content string */
+use yii\widgets\Pjax;
 
 AppAsset::register($this);
 ?>
@@ -20,12 +20,27 @@ AppAsset::register($this);
         <?= Html::csrfMetaTags() ?>
         <title><?= Html::encode($this->title) ?></title>
         <?php $this->head() ?>
+        <!--script> window.pjax_reload_list = []; </script-->
     </head>
+
     <body>
+        <?php require_once '_body-bg.php' ?>
 
         <?php $this->beginBody() ?>
-        <?php //\yii\widgets\Pjax::begin(); ?>
+
+        <?php
+        yii\widgets\Pjax::begin([
+            'id'      => 'main',
+            'options' => [
+                'tag' => 'span'
+            ]
+        ])
+        ?>      
+
+
+
         <div class="wrap">
+
             <?php
             NavBar::begin([
                 'brandLabel' => 'My Company',
@@ -40,17 +55,18 @@ AppAsset::register($this);
                     ['label' => 'Home', 'url' => ['/site/index']],
                     ['label' => 'About', 'url' => ['/site/about']],
                     ['label' => 'Contact', 'url' => ['/site/contact']],
-                    ['label' => 'Externalapi',
-                        'items' => [
-                            ['label' => 'Vkontakte', 'url' => ['/externalapi/vkontakte']],
-                            ['label' => 'Facebook', 'url' => ['/externalapi/facebook']],
-                            ['label' => 'Google', 'url' => ['/externalapi/google']],
-                        ]],
-                    Yii::$app->user->isGuest ?
-                        ['label' => 'Login', 'url' => ['/site/login']] :
-                        ['label'       => 'Logout (' . Yii::$app->user->identity->username . ')',
-                        'url'         => ['/site/logout'],
-                        'linkOptions' => ['data-method' => 'post']],
+                    ['label' => 'Cart', 'url' => ['/site/cart']],
+                    Yii::$app->user->isGuest ? (
+                        ['label' => 'Login', 'url' => ['/site/login']]
+                        ) : (
+                        '<li>'
+                        . Html::beginForm(['/site/logout'], 'post', ['data-pjax' => '1'])
+                        . Html::submitButton(
+                            'Logout (' . Yii::$app->user->identity->username . ')', ['class' => 'btn btn-link']
+                        )
+                        . Html::endForm()
+                        . '</li>'
+                        )
                 ],
             ]);
             NavBar::end();
@@ -65,16 +81,23 @@ AppAsset::register($this);
                 ?>
                 <?= $content ?>
             </div>
+
         </div>
 
         <footer class="footer">
             <div class="container">
                 <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
+
                 <p class="pull-right"><?= Yii::powered() ?></p>
             </div>
         </footer>
-        <?php //\yii\widgets\Pjax::end(); ?>
-        <?php $this->endBody() ?>
+
+
+        <?php Pjax::end(); ?>
+        <?php $this->endBody(); ?>
+        <?php Yii::$app->session['jsFiles'] = $this->jsFiles; ?>
+
+        <?php require_once '_loader.php' ?>
 
     </body>
 </html>

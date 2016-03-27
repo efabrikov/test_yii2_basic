@@ -100,4 +100,25 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
     {
         return $this->password === $password;
     }
+
+    /*    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert) ) {
+            if ($insert) {
+                if ('prod' != YII_ENV) {
+                    //get new id from prod db
+                    //$this->id = 33;
+
+                    //prepare delete row from prod on release
+                    Yii::$app->db->createCommand()->delete('user', [
+                        'id' => 663,
+                    ])->execute();
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }*/
 }

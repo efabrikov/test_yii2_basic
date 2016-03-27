@@ -5,41 +5,78 @@ $config = [
     'id'         => 'basic',
     'basePath'   => dirname(__DIR__),
     'bootstrap'  => ['log'],
-    'timeZone'   => 'Europe/Kiev',
-    'modules'    => [
-        'forum'       => [
-            'class' => 'app\modules\forum\Module',
-        // ... другие настройки модуля ...
+    'components' => [
+        'request'      => [
+            // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
+            'cookieValidationKey' => 'KfgyY0oGpGwnFU0YxqHhWTQwZDkeHzis',
         ],
-        'api'         => [
-            'class' => 'app\modules\api\Module',
-        // ... другие настройки модуля ...
+        'cache'        => [
+            'class' => 'yii\caching\FileCache',
         ],
-        'externalapi' => [
-            'class' => 'app\modules\externalapi\Module',
-        // ... другие настройки модуля ...
+        'user'         => [
+            'identityClass'   => 'app\models\User',
+            'enableAutoLogin' => true,
+        ],
+        'errorHandler' => [
+            'errorAction' => 'site/error',
+        ],
+        'mailer'       => [
+            'class'            => 'yii\swiftmailer\Mailer',
+            // send all mails to a file by default. You have to set
+            // 'useFileTransport' to false and configure a transport
+            // for the mailer to send real emails.
+            'useFileTransport' => true,
+        ],
+        'log'          => [
+            'traceLevel' => YII_DEBUG ? 3 : 0,
+            'targets'    => [
+                [
+                    'class'  => 'yii\log\FileTarget',
+                    'levels' => ['error', 'warning'],
+                ],
+                /*[
+                    'class' => 'yii\log\DbTarget',
+                    'levels' => ['info'],
+                    'categories' => ['yii\db\Command::execute'],
+                    'logVars' => [],
+                    'logTable' => 'db_execute_log'
+                ],*/
+            ],
+        ],
+        'db'           => require(__DIR__ . '/db.php'),
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'showScriptName'  => false,
+            'rules'           => [
+            ],
         ],
     ],
-    'aliases'    => [
-        'google-link' => 'http://google.com',
-    ],
-    'components' => require(__DIR__ . '/components.php'),
     'params'     => $params,
 ];
-
-/* \Yii::$container->set('yii\data\ActiveDataProvider',
-  ['pagination' => ['pageSize' => 5]]); */
 
 if (YII_ENV_DEV) {
     // configuration adjustments for 'dev' environment
     $config['bootstrap'][]      = 'debug';
-    $config['modules']['debug'] = 'yii\debug\Module';
+    $config['modules']['debug'] = [
+        'class' => 'yii\debug\Module',
+    ];
 
     $config['bootstrap'][]    = 'gii';
-    $config['modules']['gii'] = 'yii\gii\Module';
-    $config['modules']['utility'] = [
-            'class' => 'c006\utility\migration\Module',
-        ];
+    $config['modules']['gii'] = [
+        'class' => 'yii\gii\Module',
+    ];
+
+    $config['modules']['frontend'] = [
+        'class' => 'app\modules\frontend\Module',
+    ];
+
+    $config['modules']['webpage'] = [
+        'class' => 'app\modules\webpage\Module',
+    ];
+
+    $config['modules']['article'] = [
+        'class' => 'app\modules\article\Module',
+    ];
 }
 
 return $config;

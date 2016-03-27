@@ -1,0 +1,19 @@
+{
+    "schema": {        
+        "class": "app\\modules\\frontend\\modules\\fm_1458135584\\components\\HelloWidget",
+        "method": "widget",
+        "params": {
+            "message": {                
+                "class": "app\\modules\\frontend\\modules\\fm_1458135584\\components\\HelloWidget",
+                "method": "widget",
+                "params": {                    
+                    "message": {
+                          "class": "Yii",
+                           "method": "t",
+                           "params": ["app", "msg_123", {"ss":"asds"}]
+                        }
+                }
+            }
+        }
+    }
+}
